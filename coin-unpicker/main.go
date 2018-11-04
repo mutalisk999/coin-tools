@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/ybbus/jsonrpc"
+	"bytes"
+	"encoding/hex"
 	"encoding/json"
-	"strconv"
-	"math"
-	"strings"
 	"fmt"
 	"github.com/kataras/iris/core/errors"
 	"github.com/mutalisk999/bitcoin-lib/src/transaction"
-	"encoding/hex"
-	"bytes"
+	"github.com/ybbus/jsonrpc"
 	"io"
+	"math"
+	"strconv"
+	"strings"
 )
 
 type UTXODetail struct {
@@ -28,17 +28,17 @@ type UTXODetail struct {
 }
 type UTXOsDetail []UTXODetail
 
-
 var toBalance = int64(50000000)
 var feeRate = int64(10000)
 
 // set utxo script pubkey
 var scriptHex = "76a9143efea7775852df760cb14a7a4c8ed18beba2764f88ac"
+
 // set address
 var address = "16k5xaMTnjdYDcs2U8J5MsQoDzPuN3uRzz"
+
 // set rpc url
 var serverUrl = "http://test:test@127.0.0.1:10086"
-
 
 func ToPrecisionAmount(value string, nPrecision int) (int64, error) {
 	precision := int64(math.Pow10(nPrecision))
@@ -56,7 +56,7 @@ func ToPrecisionAmount(value string, nPrecision int) (int64, error) {
 		}
 
 		remainderStr := strArray[1]
-		for i:= len(remainderStr); i < nPrecision; i++ {
+		for i := len(remainderStr); i < nPrecision; i++ {
 			remainderStr = remainderStr + "0"
 		}
 		remainderStr = remainderStr[0:nPrecision]
@@ -65,7 +65,7 @@ func ToPrecisionAmount(value string, nPrecision int) (int64, error) {
 		if err != nil {
 			return 0, errors.New("invalid value: invalid remainder part")
 		}
-		return int64(quotient) * precision + int64(remainder), nil
+		return int64(quotient)*precision + int64(remainder), nil
 	} else {
 		return 0, errors.New("invalid value: too many point")
 	}
@@ -86,7 +86,6 @@ func DoHttpJsonRpcCallType1(method string, args ...interface{}) (*jsonrpc.RPCRes
 	}
 	return rpcResponse, nil
 }
-
 
 func GetUtxosByAddressRPC(addr string) ([]UTXODetail, error) {
 	nPrec := 8
@@ -190,7 +189,7 @@ func SendRawTrx(rawTrx string) (string, error) {
 
 func GetOneUtxo(utxos []UTXODetail) *UTXODetail {
 	for _, utxo := range utxos {
-		if utxo.Amount / toBalance > 1 {
+		if utxo.Amount/toBalance > 1 {
 			return &utxo
 		}
 	}
@@ -270,5 +269,3 @@ func main() {
 		fmt.Println(trxId)
 	}
 }
-
-
